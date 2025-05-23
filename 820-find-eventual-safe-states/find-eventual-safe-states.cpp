@@ -2,54 +2,37 @@ class Solution {
 public:
 
 
- bool dsf(int i ,vector<vector<int>>&adj ,vector<int> & visited, vector<int> & pathvisited , 
-  vector<int> & check){
-      visited[i]=1;
-      pathvisited[i]=1;
-      check[i]=0;
-      for(auto it :adj[i]){
-          if(!visited[it]){
-              if(dsf(it,adj,visited,pathvisited,check)==true){
-                  check[i]=0;
-                  return true;
-              }
-          }
-              else if(pathvisited[it]){
-                  check[i]=0;
-                  return true;
-              }
-          
-      }
-      check[i]=1;
-      pathvisited[i]=0;
-      return false;
-      
-      
-  }
-    vector<int> eventualSafeNodess(int V, vector<vector<int>>& adj) {
-        // code here
-        vector<int>visited(V,0);
-        vector<int>pathvisited(V,0);
-        vector<int>check(V,0);
-        vector<int>ans;
-        
-        
-        for(int i = 0 ; i< V; i++){
-            if(visited[i]==0){
-                dsf(i , adj,visited,pathvisited,check);
-                
-            }
-        }
-        for(int i =0 ; i< V; i++){
-            if(check[i]==1){
-                ans.push_back(i);
-            }
-        }
-        return ans;
-    }
-
 
     vector<int> eventualSafeNodes(vector<vector<int>>& graph) {
-       return  eventualSafeNodess(graph.size(),graph);
+      int n = graph.size();
+      vector<vector<int>>adj(n);
+      vector<int>indegree(n,0);
+      for(int i = 0 ; i< n; i++){
+        for(auto it : graph[i]){
+             adj[it].push_back(i);
+              indegree[i]++;
+        }
+      }
+      queue<int>q;
+      for(int i = 0 ; i< n; i++){
+        if(indegree[i]==0){
+            q.push(i);
+        }
+      }
+      vector<int>ans;
+      while(!q.empty()){
+        int node = q.front();
+        q.pop();
+        ans.push_back(node);
+        for(auto it : adj[node]){
+            indegree[it]--;
+            if(indegree[it]==0){
+               q.push(it);
+            }
+        }
+      }
+        sort(ans.begin(),ans.end());
+        return ans;
+
     }
 };
